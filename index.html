@@ -134,6 +134,12 @@
             display: inline-block;
         }
 
+        .btn-start {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+        }
+
         .btn-stop {
             background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
             color: white;
@@ -141,9 +147,9 @@
         }
 
         .btn-restart {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
             color: white;
-            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+            box-shadow: 0 4px 15px rgba(255, 193, 7, 0.4);
         }
 
         .control-btn:hover {
@@ -181,6 +187,24 @@
         .result-details {
             font-size: 1.2rem;
             color: #666;
+            line-height: 2;
+        }
+
+        .welcome-screen {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .welcome-icon {
+            font-size: 5rem;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .welcome-text {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 30px;
             line-height: 2;
         }
 
@@ -300,6 +324,14 @@
                 font-size: 1rem;
             }
 
+            .welcome-text {
+                font-size: 1rem;
+            }
+
+            .welcome-icon {
+                font-size: 4rem;
+            }
+
             .leaderboard-time {
                 font-size: 1.2rem;
             }
@@ -357,15 +389,29 @@
 </head>
 <body>
     <div class="game-container">
-        <!-- 标题 -->
-        <div class="card">
+        <!-- 欢迎/开始屏幕 -->
+        <div id="welcomeScreen" class="card">
             <h1 class="title">
                 <i class="bi bi-calculator"></i> 9x9乘法口诀表挑战
             </h1>
+
+            <div class="welcome-screen">
+                <div class="welcome-icon">
+                    <i class="bi bi-trophy"></i>
+                </div>
+                <p class="welcome-text">
+                    欢迎来到9x9乘法口诀表挑战！<br>
+                    点击开始挑战，随机出题，快速选择正确答案。<br>
+                    系统会记录你的答题时间，看看你能得多少分！
+                </p>
+                <button class="control-btn btn-start" id="startGameBtn">
+                    <i class="bi bi-play-circle"></i> 开始挑战
+                </button>
+            </div>
         </div>
 
         <!-- 游戏屏幕 -->
-        <div id="gameScreen" class="card">
+        <div id="gameScreen" class="card" style="display: none;">
             <div class="stats-bar">
                 <div class="stat-item">
                     <div class="stat-value" id="currentQuestion">0</div>
@@ -386,14 +432,14 @@
             </div>
 
             <div class="question-display" id="questionDisplay">
-                1 × 1 = ?
+                点击"开始挑战"开始！
             </div>
 
             <div class="options-grid" id="optionsGrid">
-                <button class="option-btn" data-index="0">1</button>
-                <button class="option-btn" data-index="1">2</button>
-                <button class="option-btn" data-index="2">3</button>
-                <button class="option-btn" data-index="3">4</button>
+                <button class="option-btn" disabled>-</button>
+                <button class="option-btn" disabled>-</button>
+                <button class="option-btn" disabled>-</button>
+                <button class="option-btn" disabled>-</button>
             </div>
 
             <div class="text-center">
@@ -404,7 +450,7 @@
         </div>
 
         <!-- 结果屏幕 -->
-        <div id="resultScreen" class="card" class="result-screen">
+        <div id="resultScreen" class="card" class="result-screen" style="display: none;">
             <h2 style="text-align: center;">挑战结束！</h2>
             <div class="result-score" id="finalAvgTime">0.0秒</div>
             <div class="result-details">
