@@ -2,6 +2,12 @@
 // 作者: 工匠
 // 版本: 1.4.0
 
+console.log('========================================');
+console.log('   9x9乘法口诀表挑战 v1.4.0');
+console.log('   作者: 工匠');
+console.log('========================================');
+console.log('');
+
 // 游戏状态
 const gameState = {
     isPlaying: false,
@@ -31,7 +37,10 @@ let currentOptions = [];
 
 // 初始化
 function init() {
-    console.log('初始化游戏...');
+    console.log('========================================');
+    console.log('   开始初始化游戏 v1.4.0...');
+    console.log('========================================');
+    console.log('');
     
     // 获取 DOM 元素
     welcomeScreen = document.getElementById('welcomeScreen');
@@ -56,41 +65,81 @@ function init() {
     finalAvgTime = document.getElementById('finalAvgTime');
     historyTableBody = document.getElementById('historyTableBody');
 
+    // 检查 DOM 元素是否获取成功
+    console.log('DOM 元素检查:');
+    console.log('  welcomeScreen:', !!welcomeScreen);
+    console.log('  gameScreen:', !!gameScreen);
+    console.log('  resultScreen:', !!resultScreen);
+    console.log('  questionDisplay:', !!questionDisplay);
+    console.log('  optionsGrid:', !!optionsGrid);
+    console.log('  correctCountEl:', !!correctCountEl);
+    console.log('');
+
     // 使用事件委托处理选项点击
+    console.log('设置事件委托...');
     optionsGrid.addEventListener('click', handleOptionClick);
+    console.log('  ✓ 事件委托已绑定到 optionsGrid');
     
     // 绑定按钮事件
+    console.log('绑定按钮事件...');
     document.getElementById('startGameBtn').addEventListener('click', startGame);
+    console.log('  ✓ startGameBtn 事件已绑定');
+    
     document.getElementById('stopGameBtn').addEventListener('click', stopGame);
+    console.log('  ✓ stopGameBtn 事件已绑定');
+    
     document.getElementById('restartBtn').addEventListener('click', startGame);
+    console.log('  ✓ restartBtn 事件已绑定');
+    
     document.getElementById('homeBtn').addEventListener('click', showWelcome);
+    console.log('  ✓ homeBtn 事件已绑定');
+    console.log('');
     
     // 加载排行榜
     loadLeaderboard();
-    renderLeaderboard();
+    console.log('  ✓ 排行榜已加载');
     
-    console.log('初始化完成');
+    renderLeaderboard();
+    console.log('  ✓ 排行榜已渲染');
+    
+    console.log('');
+    console.log('========================================');
+    console.log('   初始化完成！');
+    console.log('========================================');
 }
 
 // 处理选项点击（事件委托）
 function handleOptionClick(event) {
+    console.log('========================================');
+    console.log('   事件委托被触发！');
+    console.log('========================================');
+    
     const btn = event.target.closest('.option-btn');
+    console.log('被点击的按钮:', btn);
+    
     if (!btn || btn.disabled) {
+        console.log('按钮不存在或已禁用，返回');
         return;
     }
     
     const index = parseInt(btn.dataset.index);
     const answer = currentOptions[index];
     
-    console.log('按钮被点击，index:', index, 'answer:', answer);
-    console.log('选项数组:', currentOptions);
+    console.log('点击信息:');
+    console.log('  index:', index);
+    console.log('  answer:', answer);
+    console.log('  currentOptions:', currentOptions);
+    console.log('  btn.dataset.index:', btn.dataset.index);
     
     selectAnswer(answer, btn, index);
 }
 
 // 开始游戏
 function startGame() {
-    console.log('开始游戏');
+    console.log('========================================');
+    console.log('   开始游戏 v1.4.0');
+    console.log('========================================');
+    console.log('');
     
     // 获取学生信息
     gameState.studentName = studentNameInput.value.trim() || '匿名学生';
@@ -107,13 +156,27 @@ function startGame() {
     gameState.canAnswer = true;
     gameState.questionHistory = [];
     
-    console.log('游戏状态重置:', gameState);
+    console.log('游戏状态重置:', {
+        isPlaying: gameState.isPlaying,
+        currentQuestion: gameState.currentQuestion,
+        correctCount: gameState.correctCount,
+        wrongCount: gameState.wrongCount,
+        canAnswer: gameState.canAnswer
+    });
+    console.log('');
 
     welcomeScreen.style.display = 'none';
     resultScreen.style.display = 'none';
     gameScreen.style.display = 'block';
 
+    console.log('显示游戏屏幕');
+    console.log('  ✓ welcomeScreen.style.display = none');
+    console.log('  ✓ gameScreen.style.display = block');
+    console.log('  ✓ resultScreen.style.display = none');
+    console.log('');
+
     updateStats();
+    console.log('调用 nextQuestion...');
     nextQuestion();
 }
 
