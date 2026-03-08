@@ -1,22 +1,29 @@
 // 9x9乘法口诀表挑战游戏
 // 作者: 工匠
-// 版本: 1.0.1
+// 版本: 1.2.0
 
 // 游戏状态
 const gameState = {
     isPlaying: false,
     currentQuestion: 0,
     correctCount: 0,
+    wrongCount: 0,
     totalTime: 0,
     questionStartTime: 0,
     currentAnswer: 0,
     canAnswer: true,
+    studentName: '',
+    studentClass: '',
+    questionHistory: [], // 记录每道题的答案
     leaderboard: []
 };
 
 // DOM 元素
 let welcomeScreen, gameScreen, resultScreen, questionDisplay, optionsGrid;
 let currentQuestionEl, correctCountEl, avgTimeEl, progressFill, leaderboardList;
+let studentNameInput, studentClassInput;
+let finalStudentName, finalStudentClass, totalQuestionsEl, finalCorrectEl, accuracyEl;
+let accuracyBars, finalAvgTime;
 
 // 选项存储
 let currentOptions = [];
@@ -36,6 +43,15 @@ function init() {
     avgTimeEl = document.getElementById('avgTime');
     progressFill = document.getElementById('progressFill');
     leaderboardList = document.getElementById('leaderboardList');
+    studentNameInput = document.getElementById('studentName');
+    studentClassInput = document.getElementById('studentClass');
+    finalStudentName = document.getElementById('finalStudentName');
+    finalStudentClass = document.getElementById('finalStudentClass');
+    totalQuestionsEl = document.getElementById('totalQuestions');
+    finalCorrectEl = document.getElementById('finalCorrect');
+    accuracyEl = document.getElementById('accuracy');
+    accuracyBars = document.getElementById('accuracyBars');
+    finalAvgTime = document.getElementById('finalAvgTime');
 
     // 加载排行榜
     loadLeaderboard();
@@ -53,11 +69,20 @@ function init() {
 // 开始游戏
 function startGame() {
     console.log('开始游戏');
+    
+    // 获取学生信息
+    gameState.studentName = studentNameInput.value.trim() || '匿名学生';
+    gameState.studentClass = studentClassInput.value.trim() || '';
+    
+    console.log('学生信息:', gameState.studentName, gameState.studentClass);
+    
     gameState.isPlaying = true;
     gameState.currentQuestion = 0;
     gameState.correctCount = 0;
+    gameState.wrongCount = 0;
     gameState.totalTime = 0;
     gameState.canAnswer = true;
+    gameState.questionHistory = [];
 
     welcomeScreen.style.display = 'none';
     resultScreen.style.display = 'none';
@@ -155,10 +180,21 @@ function selectAnswer(answer, btn) {
 
     // 检查答案
     const isCorrect = answer === gameState.currentAnswer;
+    
+    // 记录这道题的信息
+    gameState.questionHistory.push({
+        question: questionDisplay.textContent,
+        correctAnswer: gameState.currentAnswer,
+        userAnswer: answer,
+        isCorrect: isCorrect,
+        timeUsed: timeUsed
+    });
 
     if (isCorrect) {
+        gameState.correctCount++;
         btn.classList.add('correct');
     } else {
+        gameState.wrongCount++;
         btn.classList.add('wrong');
         // 高亮正确答案
         const allBtns = optionsGrid.querySelectorAll('.option-btn');
@@ -221,10 +257,15 @@ function stopGame() {
     }
 
     // 显示结果
-    document.getElementById('finalAvgTime').textContent = `${avgTime}秒`;
-    document.getElementById('totalQuestions').textContent = gameState.currentQuestion;
-    document.getElementById('finalCorrect').textContent = gameState.correctCount;
-    document.getElementById('accuracy').textContent = `${accuracy}%`;
+    finalStudentName.textContent = gameState.studentName;
+    finalStudentClass.textContent = gameState.studentClass || '未填写';
+    finalAvgTime.textContent = `${avgTime}秒`;
+    totalQuestionsEl.textContent = gameState.currentQuestion;
+    finalCorrectEl.textContent = gameState.correctCount;
+    accuracyEl.textContent = `${accuracy}%`;
+
+    // 显示正确率分析
+    renderAccuracyChart();
 
     gameScreen.style.display = 'none';
     resultScreen.style.display = 'block';
@@ -233,14 +274,54 @@ function stopGame() {
     renderLeaderboard();
 }
 
+// 渲染正确率图表
+function renderAccuracyChart() {
+    if (gameState.questionHistory.length === 0) {
+        accuracyBars.innerHTML = '<p class="text-center text-muted">暂无答题记录</p>';
+        return;
+    }
+
+    // 按题型分类（乘数范围）
+    const range1 = gameState.questionHistory.filter(q => q.correctAnswer <= 20); // 1-20
+    const range2 = gameState.questionHistory.filter(q => q.correctAnswer > 20 && q.correctAnswer <= 50); // 21-50
+    const range3 = gameState.questionHistory.filter(q => q.correctAnswer > 50); // 51-81
+
+    const total = gameState.questionHistory.length;
+    const accuracy1 = range1.length > 0 ? ((range1.filter(r => r.isCorrect).length / range1.length) * 100).toFixed(1) : 0;
+    const accuracy2 = range2.length > 0 ? ((range2.filter(r => r.isCorrect).length / range2.length) * 100).toFixed(1) : 0;
+    const accuracy3 = range3.length > 0 ? ((range3.filter(r => r.isCorrect).length / range3.length) * 100).toFixed(1) : 0;
+
+    accuracyBars.innerHTML = `
+        <div class="chart-label">简单 (1-20): ${accuracy1}% (${range1.length}题)</div>
+        <div class="chart-bar">
+            <div class="chart-fill" style="width: ${accuracy1}%">${accuracy1}%</div>
+        </div>
+        <div class="chart-label">中等 (21-50): ${accuracy2}% (${range2.length}题)</div>
+        <div class="chart-bar">
+            <div class="chart-fill" style="width: ${accuracy2}%">${accuracy2}%</div>
+        </div>
+        <div class="chart-label">困难 (51-81): ${accuracy3}% (${range3.length}题)</div>
+        <div class="chart-bar">
+            <div class="chart-fill" style="width: ${accuracy3}%">${accuracy3}%</div>
+        </div>
+        <div class="chart-label">总体正确率: ${((gameState.correctCount / total) * 100).toFixed(1)}%</div>
+        <div class="chart-bar">
+            <div class="chart-fill" style="width: ${((gameState.correctCount / total) * 100).toFixed(1)}%">${((gameState.correctCount / total) * 100).toFixed(1)}%</div>
+        </div>
+    `;
+}
+
 // 保存到排行榜
 function saveToLeaderboard(avgTime, correctCount, totalQuestions) {
     const record = {
         date: new Date().toLocaleDateString('zh-CN'),
+        name: gameState.studentName,
+        class: gameState.studentClass,
         avgTime: parseFloat(avgTime),
         correctCount: correctCount,
         totalQuestions: totalQuestions,
-        accuracy: ((correctCount / totalQuestions) * 100).toFixed(1)
+        accuracy: ((correctCount / totalQuestions) * 100).toFixed(1),
+        questionHistory: gameState.questionHistory
     };
 
     gameState.leaderboard.push(record);
@@ -288,7 +369,11 @@ function renderLeaderboard() {
                     ${rankIcon || rank}
                 </div>
                 <div class="leaderboard-info">
+                    <div class="leaderboard-name">${record.name}</div>
                     <div class="leaderboard-date">${record.date}</div>
+                    <div style="font-size: 0.9rem; color: #666;">
+                        ${record.class ? `班级: ${record.class}` : ''}
+                    </div>
                     <div>
                         正确率: <strong>${record.accuracy}%</strong>
                         (${record.correctCount}/${record.totalQuestions})
@@ -311,6 +396,7 @@ function getRankIcon(rank) {
 // 显示欢迎屏幕
 function showWelcome() {
     resultScreen.style.display = 'none';
+    gameScreen.style.display = 'none';
     welcomeScreen.style.display = 'block';
 }
 

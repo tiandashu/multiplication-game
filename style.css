@@ -1,0 +1,340 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.container {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    max-width: 600px;
+    width: 100%;
+    padding: 30px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+header h1 {
+    color: #667eea;
+    font-size: 2em;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    color: #666;
+    font-size: 1em;
+}
+
+.screen {
+    display: none;
+}
+
+.screen.active {
+    display: block;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* 开始界面 */
+.welcome {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.welcome p {
+    color: #333;
+    font-size: 1.1em;
+    line-height: 1.6;
+    margin-bottom: 10px;
+}
+
+.hint {
+    color: #999;
+    font-size: 0.9em;
+}
+
+.info {
+    text-align: center;
+    margin-top: 20px;
+    color: #666;
+    font-size: 0.9em;
+}
+
+/* 答题界面 */
+.game-info {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.stat {
+    text-align: center;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.stat .label {
+    display: block;
+    color: #666;
+    font-size: 0.85em;
+    margin-bottom: 5px;
+}
+
+.stat .value {
+    display: block;
+    color: #667eea;
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+.question-box {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.question {
+    font-size: 3em;
+    font-weight: bold;
+    color: #333;
+    padding: 30px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+}
+
+.answers {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.answer {
+    padding: 20px;
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.answer:hover {
+    border-color: #667eea;
+    background: #f8f9fa;
+    transform: translateY(-2px);
+}
+
+.answer:active {
+    transform: translateY(0);
+}
+
+.answer.correct {
+    background: #4CAF50;
+    color: white;
+    border-color: #4CAF50;
+}
+
+.answer.wrong {
+    background: #f44336;
+    color: white;
+    border-color: #f44336;
+}
+
+/* 按钮样式 */
+.btn {
+    width: 100%;
+    padding: 15px 30px;
+    font-size: 1.1em;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 10px;
+}
+
+.primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+}
+
+.secondary {
+    background: white;
+    color: #667eea;
+    border: 2px solid #667eea;
+}
+
+.secondary:hover {
+    background: #667eea;
+    color: white;
+}
+
+/* 结果界面 */
+.summary {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.summary-item:last-child {
+    border-bottom: none;
+}
+
+.summary-item .label {
+    color: #666;
+}
+
+.summary-item .value {
+    color: #333;
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.summary-item.highlight .value {
+    color: #667eea;
+    font-size: 1.5em;
+}
+
+h3 {
+    color: #667eea;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.rankings {
+    margin-bottom: 20px;
+}
+
+.rank-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    background: white;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    border-left: 4px solid #667eea;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.rank-item:nth-child(1) {
+    border-left-color: #FFD700;
+    background: linear-gradient(90deg, #fff9c4 0%, white 100%);
+}
+
+.rank-item:nth-child(2) {
+    border-left-color: #C0C0C0;
+    background: linear-gradient(90deg, #f5f5f5 0%, white 100%);
+}
+
+.rank-item:nth-child(3) {
+    border-left-color: #CD7F32;
+    background: linear-gradient(90deg, #ffe0b2 0%, white 100%);
+}
+
+.rank-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.rank-number {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #667eea;
+    min-width: 25px;
+}
+
+.rank-time {
+    color: #333;
+    font-weight: bold;
+}
+
+.rank-date {
+    color: #999;
+    font-size: 0.85em;
+}
+
+.no-records {
+    text-align: center;
+    color: #999;
+    padding: 40px 0;
+}
+
+.buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.buttons .btn {
+    flex: 1;
+}
+
+/* 移动端适配 */
+@media (max-width: 480px) {
+    .container {
+        padding: 20px;
+    }
+
+    header h1 {
+        font-size: 1.5em;
+    }
+
+    .question {
+        font-size: 2.5em;
+        padding: 20px;
+    }
+
+    .answer {
+        font-size: 1.3em;
+        padding: 15px;
+    }
+
+    .stat .value {
+        font-size: 1.2em;
+    }
+
+    .summary-item .value {
+        font-size: 1em;
+    }
+
+    .summary-item.highlight .value {
+        font-size: 1.2em;
+    }
+}
