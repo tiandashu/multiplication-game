@@ -1,9 +1,9 @@
-// 9x9乘法口诀表挑战游戏 v2.0
+// 9x9乘法口诀表挑战游戏 v3.0
 // 作者: 工匠
-// 简化版：去掉学生信息输入和详细分析
+// 简化版：直接开始游戏，不收集学生信息
 
 console.log('========================================');
-console.log('   9x9乘法口诀表挑战 v2.0');
+console.log('   9x9乘法口诀表挑战 v3.0');
 console.log('   作者: 工匠');
 console.log('========================================');
 console.log('');
@@ -22,7 +22,7 @@ const gameState = {
 };
 
 // DOM 元素
-let welcomeScreen, gameScreen, resultScreen, questionDisplay, optionsGrid;
+let gameScreen, resultScreen, questionDisplay, optionsGrid;
 let currentQuestionEl, correctCountEl, avgTimeEl, progressFill, leaderboardList;
 let finalAvgTime, totalQuestionsEl, finalCorrectEl, finalWrongEl, accuracyEl;
 
@@ -32,12 +32,11 @@ let currentOptions = [];
 // 初始化
 function init() {
     console.log('========================================');
-    console.log('   开始初始化游戏 v2.0...');
+    console.log('   初始化游戏 v3.0...');
     console.log('========================================');
     console.log('');
     
     // 获取 DOM 元素
-    welcomeScreen = document.getElementById('welcomeScreen');
     gameScreen = document.getElementById('gameScreen');
     resultScreen = document.getElementById('resultScreen');
     questionDisplay = document.getElementById('questionDisplay');
@@ -53,30 +52,28 @@ function init() {
     finalWrongEl = document.getElementById('finalWrong');
     accuracyEl = document.getElementById('accuracy');
 
+    // 检查 DOM 元素是否获取成功
     console.log('DOM 元素检查:');
-    console.log('  welcomeScreen:', !!welcomeScreen);
     console.log('  gameScreen:', !!gameScreen);
     console.log('  resultScreen:', !!resultScreen);
     console.log('  questionDisplay:', !!questionDisplay);
     console.log('  optionsGrid:', !!optionsGrid);
+    console.log('  currentQuestionEl:', !!currentQuestionEl);
     console.log('  correctCountEl:', !!correctCountEl);
+    console.log('  avgTimeEl:', !!avgTimeEl);
+    console.log('  progressFill:', !!progressFill);
+    console.log('  leaderboardList:', !!leaderboardList);
+    console.log('  finalAvgTime:', !!finalAvgTime);
+    console.log('  totalQuestionsEl:', !!totalQuestionsEl);
+    console.log('  finalCorrectEl:', !!finalCorrectEl);
+    console.log('  finalWrongEl:', !!finalWrongEl);
+    console.log('  accuracyEl:', !!accuracyEl);
     console.log('');
     
-    // 不使用事件委托，直接绑定按钮事件
+    // 绑定按钮事件
     console.log('绑定按钮事件...');
-    const startBtn = document.getElementById('startGameBtn');
     const stopBtn = document.getElementById('stopGameBtn');
     const restartBtn = document.getElementById('restartBtn');
-    const homeBtn = document.getElementById('homeBtn');
-    
-    if (startBtn) {
-        // 移除旧事件
-        const newStartBtn = startBtn.cloneNode(true);
-        startBtn.parentNode.replaceChild(newStartBtn, startBtn);
-        
-        newStartBtn.addEventListener('click', startGame);
-        console.log('  ✓ startGameBtn 事件已绑定');
-    }
     
     if (stopBtn) {
         const newStopBtn = stopBtn.cloneNode(true);
@@ -92,14 +89,6 @@ function init() {
         
         newRestartBtn.addEventListener('click', startGame);
         console.log('  ✓ restartBtn 事件已绑定');
-    }
-    
-    if (homeBtn) {
-        const newHomeBtn = homeBtn.cloneNode(true);
-        homeBtn.parentNode.replaceChild(newHomeBtn, homeBtn);
-        
-        newHomeBtn.addEventListener('click', showWelcome);
-        console.log('  ✓ homeBtn 事件已绑定');
     }
     
     console.log('');
@@ -120,7 +109,7 @@ function init() {
 // 开始游戏
 function startGame() {
     console.log('========================================');
-    console.log('   开始游戏 v2.0');
+    console.log('   开始游戏 v3.0');
     console.log('========================================');
     console.log('');
     
@@ -140,7 +129,6 @@ function startGame() {
     });
     console.log('');
 
-    welcomeScreen.style.display = 'none';
     resultScreen.style.display = 'none';
     gameScreen.style.display = 'block';
 
@@ -237,7 +225,9 @@ function renderOptions(options) {
             console.log('========================================');
             console.log('  index:', index);
             console.log('  option:', option);
-            console.log('  options[', index, ']:', options[index]);
+            console.log('  dataset.index:', btn.dataset.index);
+            console.log('  dataset.value:', btn.dataset.value);
+            
             selectAnswer(options[index], btn, index);
         });
         
@@ -252,7 +242,7 @@ function renderOptions(options) {
 // 选择答案
 function selectAnswer(answer, btn, index) {
     console.log('========================================');
-    console.log('   selectAnswer 被调用 v2.0');
+    console.log('   selectAnswer 被调用 v3.0');
     console.log('========================================');
     
     console.log('answer:', answer);
@@ -279,7 +269,7 @@ function selectAnswer(answer, btn, index) {
     console.log('答案比较:');
     console.log('  用户的答案:', answer, '(类型:', typeof answer, ')');
     console.log('  解析后的答案:', parseInt(answer));
-    console.log('  正确答案:', gameState.currentAnswer, '(类型:', typeof gameState.currentAnswer, ')');
+    console.log('  正确答案:', gameState.currentAnswer);
     console.log('  解析后的正确答案:', parseInt(gameState.currentAnswer));
     console.log('  是否正确:', isCorrect);
 
@@ -355,8 +345,8 @@ function stopGame() {
         ? ((gameState.correctCount / gameState.currentQuestion) * 100).toFixed(1)
         : 0;
 
-    // 保存到排行榜（至少答对5题才进入排行榜）
-    if (gameState.currentQuestion >= 5) {
+    // 保存到排行榜
+    if (gameState.currentQuestion >= 5) { // 至少答对5题才进入排行榜
         saveToLeaderboard(avgTime, gameState.correctCount, gameState.currentQuestion);
     }
 
@@ -452,12 +442,11 @@ function getRankIcon(rank) {
     return icons[rank];
 }
 
-// 显示欢迎屏幕
-function showWelcome() {
-    resultScreen.style.display = 'none';
-    gameScreen.style.display = 'none';
-    welcomeScreen.style.display = 'block';
-}
-
-// 页面加载完成后初始化
-document.addEventListener('DOMContentLoaded', init);
+// 页面加载完成后初始化并自动开始游戏
+document.addEventListener('DOMContentLoaded', () => {
+    init();
+    // 自动开始游戏
+    setTimeout(() => {
+        startGame();
+    }, 500);
+});
