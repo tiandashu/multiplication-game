@@ -66,6 +66,11 @@ function init() {
     document.getElementById('restartBtn').addEventListener('click', startGame);
     document.getElementById('homeBtn').addEventListener('click', showWelcome);
     
+    // 暴露函数到全局对象（供 HTML onclick 使用）
+    window.game = {
+        selectAnswer: selectAnswer
+    };
+    
     console.log('初始化完成');
 }
 
@@ -79,6 +84,7 @@ function startGame() {
     
     console.log('学生信息:', gameState.studentName, gameState.studentClass);
     
+    // 重置游戏状态
     gameState.isPlaying = true;
     gameState.currentQuestion = 0;
     gameState.correctCount = 0;
@@ -86,6 +92,8 @@ function startGame() {
     gameState.totalTime = 0;
     gameState.canAnswer = true;
     gameState.questionHistory = [];
+    
+    console.log('游戏状态重置:', gameState);
 
     welcomeScreen.style.display = 'none';
     resultScreen.style.display = 'none';
@@ -170,8 +178,10 @@ function renderOptions(options) {
 // 选择答案
 function selectAnswer(answer, btn) {
     console.log('选择答案:', answer);
+    console.log('当前答案:', gameState.currentAnswer);
     
     if (!gameState.isPlaying || !gameState.canAnswer) {
+        console.log('游戏未开始或已禁用');
         return;
     }
 
@@ -182,25 +192,32 @@ function selectAnswer(answer, btn) {
     gameState.totalTime += timeUsed;
 
     // 检查答案
-    const isCorrect = answer === gameState.currentAnswer;
+    const isCorrect = parseInt(answer) === gameState.currentAnswer;
+    
+    console.log('是否正确:', isCorrect);
+    console.log('用户答案（解析后）:', parseInt(answer));
     
     // 记录这道题的详细信息
-    gameState.questionHistory.push({
+    const record = {
         questionNumber: gameState.currentQuestion,
         question: questionDisplay.textContent,
         userAnswer: answer,
         correctAnswer: gameState.currentAnswer,
         isCorrect: isCorrect,
         timeUsed: timeUsed.toFixed(2)
-    });
-
-    console.log('答题历史:', gameState.questionHistory[gameState.questionHistory.length - 1]);
+    };
+    
+    gameState.questionHistory.push(record);
+    
+    console.log('答题记录:', record);
 
     if (isCorrect) {
         gameState.correctCount++;
+        console.log('正确数增加到:', gameState.correctCount);
         btn.classList.add('correct');
     } else {
         gameState.wrongCount++;
+        console.log('错误数增加到:', gameState.wrongCount);
         btn.classList.add('wrong');
         // 高亮正确答案
         const allBtns = optionsGrid.querySelectorAll('.option-btn');
@@ -218,7 +235,9 @@ function selectAnswer(answer, btn) {
     });
 
     // 更新统计
+    console.log('调用 updateStats 前，correctCount:', gameState.correctCount);
     updateStats();
+    console.log('调用 updateStats 后');
 
     // 延迟后进入下一题
     setTimeout(() => {
