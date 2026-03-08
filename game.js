@@ -1,9 +1,9 @@
-// 9x9乘法口诀表挑战游戏 v3.0
+// 9x9乘法口诀表挑战游戏 v4.0
 // 作者: 工匠
-// 简化版：直接开始游戏，不收集学生信息
+// 修复：点击"开始挑战"重新开始，"停止挑战"时未答题目不计入
 
 console.log('========================================');
-console.log('   9x9乘法口诀表挑战 v3.0');
+console.log('   9x9乘法口诀表挑战 v4.0');
 console.log('   作者: 工匠');
 console.log('========================================');
 console.log('');
@@ -18,6 +18,7 @@ const gameState = {
     questionStartTime: 0,
     currentAnswer: 0,
     canAnswer: true,
+    hasAnsweredCurrentQuestion: false, // 当前题目是否已回答
     leaderboard: []
 };
 
@@ -32,7 +33,7 @@ let currentOptions = [];
 // 初始化
 function init() {
     console.log('========================================');
-    console.log('   初始化游戏 v3.0...');
+    console.log('   初始化游戏 v4.0...');
     console.log('========================================');
     console.log('');
     
@@ -60,20 +61,21 @@ function init() {
     console.log('  optionsGrid:', !!optionsGrid);
     console.log('  currentQuestionEl:', !!currentQuestionEl);
     console.log('  correctCountEl:', !!correctCountEl);
-    console.log('  avgTimeEl:', !!avgTimeEl);
-    console.log('  progressFill:', !!progressFill);
-    console.log('  leaderboardList:', !!leaderboardList);
-    console.log('  finalAvgTime:', !!finalAvgTime);
-    console.log('  totalQuestionsEl:', !!totalQuestionsEl);
-    console.log('  finalCorrectEl:', !!finalCorrectEl);
-    console.log('  finalWrongEl:', !!finalWrongEl);
-    console.log('  accuracyEl:', !!accuracyEl);
     console.log('');
     
     // 绑定按钮事件
     console.log('绑定按钮事件...');
-    const stopBtn = document.getElementById('stopGameBtn');
     const restartBtn = document.getElementById('restartBtn');
+    const stopBtn = document.getElementById('stopGameBtn');
+    
+    if (restartBtn) {
+        // 移除旧事件
+        const newRestartBtn = restartBtn.cloneNode(true);
+        restartBtn.parentNode.replaceChild(newRestartBtn, restartBtn);
+        
+        newRestartBtn.addEventListener('click', startGame);
+        console.log('  ✓ restartBtn 事件已绑定（重新开始游戏）');
+    }
     
     if (stopBtn) {
         const newStopBtn = stopBtn.cloneNode(true);
@@ -81,14 +83,6 @@ function init() {
         
         newStopBtn.addEventListener('click', stopGame);
         console.log('  ✓ stopGameBtn 事件已绑定');
-    }
-    
-    if (restartBtn) {
-        const newRestartBtn = restartBtn.cloneNode(true);
-        restartBtn.parentNode.replaceChild(newRestartBtn, restartBtn);
-        
-        newRestartBtn.addEventListener('click', startGame);
-        console.log('  ✓ restartBtn 事件已绑定');
     }
     
     console.log('');
@@ -106,10 +100,10 @@ function init() {
     console.log('========================================');
 }
 
-// 开始游戏
+// 开始游戏（重新开始）
 function startGame() {
     console.log('========================================');
-    console.log('   开始游戏 v3.0');
+    console.log('   开始游戏 v4.0（重新开始）');
     console.log('========================================');
     console.log('');
     
@@ -120,12 +114,14 @@ function startGame() {
     gameState.wrongCount = 0;
     gameState.totalTime = 0;
     gameState.canAnswer = true;
+    gameState.hasAnsweredCurrentQuestion = false;
     
     console.log('游戏状态重置:', {
         isPlaying: gameState.isPlaying,
         currentQuestion: gameState.currentQuestion,
         correctCount: gameState.correctCount,
-        wrongCount: gameState.wrongCount
+        wrongCount: gameState.wrongCount,
+        canAnswer: gameState.canAnswer
     });
     console.log('');
 
@@ -136,13 +132,16 @@ function startGame() {
     console.log('');
 
     updateStats();
-    nextQuestion();
+    
+    // 生成第一道题，但题目数仍为 0
+    // 只有当用户回答后，题目数才+1
+    generateNextQuestion();
 }
 
-// 下一题
-function nextQuestion() {
-    gameState.currentQuestion++;
+// 生成下一道题（但不增加题目数）
+function generateNextQuestion() {
     gameState.canAnswer = true;
+    gameState.hasAnsweredCurrentQuestion = false;
 
     // 生成题目 (1-9 之间的乘法)
     const num1 = Math.floor(Math.random() * 9) + 1;
@@ -159,8 +158,8 @@ function nextQuestion() {
     // 记录开始时间
     gameState.questionStartTime = Date.now();
 
-    // 更新统计
-    updateStats();
+    console.log('生成新题:', questionDisplay.textContent);
+    console.log('当前题目数:', gameState.currentQuestion);
 }
 
 // 生成选项
@@ -221,12 +220,8 @@ function renderOptions(options) {
             e.stopPropagation();
             console.log('');
             console.log('========================================');
-            console.log('   按钮点击事件被触发！');
+            console.log('   按钮直接点击事件被触发！');
             console.log('========================================');
-            console.log('  index:', index);
-            console.log('  option:', option);
-            console.log('  dataset.index:', btn.dataset.index);
-            console.log('  dataset.value:', btn.dataset.value);
             
             selectAnswer(options[index], btn, index);
         });
@@ -242,7 +237,7 @@ function renderOptions(options) {
 // 选择答案
 function selectAnswer(answer, btn, index) {
     console.log('========================================');
-    console.log('   selectAnswer 被调用 v3.0');
+    console.log('   selectAnswer 被调用 v4.0');
     console.log('========================================');
     
     console.log('answer:', answer);
@@ -251,13 +246,21 @@ function selectAnswer(answer, btn, index) {
     console.log('gameState.currentAnswer:', gameState.currentAnswer);
     console.log('gameState.isPlaying:', gameState.isPlaying);
     console.log('gameState.canAnswer:', gameState.canAnswer);
+    console.log('gameState.hasAnsweredCurrentQuestion:', gameState.hasAnsweredCurrentQuestion);
     
     if (!gameState.isPlaying || !gameState.canAnswer) {
         console.log('游戏未开始或已禁用，返回');
         return;
     }
 
+    // 检查当前题目是否已回答
+    if (gameState.hasAnsweredCurrentQuestion) {
+        console.log('当前题目已回答，忽略');
+        return;
+    }
+
     gameState.canAnswer = false;
+    gameState.hasAnsweredCurrentQuestion = true;
 
     // 计算用时
     const timeUsed = (Date.now() - gameState.questionStartTime) / 1000;
@@ -267,11 +270,15 @@ function selectAnswer(answer, btn, index) {
     const isCorrect = parseInt(answer) === parseInt(gameState.currentAnswer);
     
     console.log('答案比较:');
-    console.log('  用户的答案:', answer, '(类型:', typeof answer, ')');
+    console.log('  用户的答案:', answer);
     console.log('  解析后的答案:', parseInt(answer));
     console.log('  正确答案:', gameState.currentAnswer);
     console.log('  解析后的正确答案:', parseInt(gameState.currentAnswer));
     console.log('  是否正确:', isCorrect);
+
+    // 回答后才增加题目数
+    gameState.currentQuestion++;
+    console.log('题目数增加到:', gameState.currentQuestion);
 
     if (isCorrect) {
         gameState.correctCount++;
@@ -297,14 +304,15 @@ function selectAnswer(answer, btn, index) {
     });
 
     // 更新统计
+    console.log('调用 updateStats 前，currentQuestion:', gameState.currentQuestion);
     console.log('调用 updateStats 前，correctCount:', gameState.correctCount);
     updateStats();
-    console.log('调用 updateStats 后，correctCount:', gameState.correctCount);
+    console.log('调用 updateStats 后，correctCount:', correctCountEl.textContent);
     console.log('');
     
     // 延迟后进入下一题
     setTimeout(() => {
-        nextQuestion();
+        generateNextQuestion();
     }, 800);
 }
 
@@ -337,6 +345,21 @@ function stopGame() {
 
     gameState.isPlaying = false;
 
+    console.log('========================================');
+    console.log('   停止游戏 v4.0');
+    console.log('========================================');
+    console.log('');
+    
+    // 检查当前题目是否已回答
+    if (!gameState.hasAnsweredCurrentQuestion) {
+        // 如果当前题目还没回答，题目数-1
+        console.log('当前题目未回答，题目数从', gameState.currentQuestion, '减少到', gameState.currentQuestion - 1);
+        gameState.currentQuestion--;
+        updateStats();
+    } else {
+        console.log('当前题目已回答，题目数保持:', gameState.currentQuestion);
+    }
+
     // 计算统计数据
     const avgTime = gameState.currentQuestion > 0
         ? (gameState.totalTime / gameState.currentQuestion).toFixed(2)
@@ -345,8 +368,16 @@ function stopGame() {
         ? ((gameState.correctCount / gameState.currentQuestion) * 100).toFixed(1)
         : 0;
 
-    // 保存到排行榜
-    if (gameState.currentQuestion >= 5) { // 至少答对5题才进入排行榜
+    console.log('统计:');
+    console.log('  题目数:', gameState.currentQuestion);
+    console.log('  正确数:', gameState.correctCount);
+    console.log('  错误数:', gameState.wrongCount);
+    console.log('  平均用时:', avgTime);
+    console.log('  正确率:', accuracy);
+    console.log('');
+
+    // 保存到排行榜（至少答对1题才进入排行榜）
+    if (gameState.currentQuestion >= 1) {
         saveToLeaderboard(avgTime, gameState.correctCount, gameState.currentQuestion);
     }
 
