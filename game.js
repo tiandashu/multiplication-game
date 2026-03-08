@@ -1,9 +1,9 @@
-// 9x9乘法口诀表挑战游戏
+// 9x9乘法口诀表挑战游戏 v2.0
 // 作者: 工匠
-// 版本: 1.5.0
+// 简化版：去掉学生信息输入和详细分析
 
 console.log('========================================');
-console.log('   9x9乘法口诀表挑战 v1.5.0');
+console.log('   9x9乘法口诀表挑战 v2.0');
 console.log('   作者: 工匠');
 console.log('========================================');
 console.log('');
@@ -18,19 +18,13 @@ const gameState = {
     questionStartTime: 0,
     currentAnswer: 0,
     canAnswer: true,
-    studentName: '',
-    studentClass: '',
-    questionHistory: [], // 记录每道题的详细信息
     leaderboard: []
 };
 
 // DOM 元素
 let welcomeScreen, gameScreen, resultScreen, questionDisplay, optionsGrid;
 let currentQuestionEl, correctCountEl, avgTimeEl, progressFill, leaderboardList;
-let studentNameInput, studentClassInput;
-let finalStudentName, finalStudentClass, totalQuestionsEl, finalCorrectEl, finalWrongEl, accuracyEl;
-let accuracyBars, finalAvgTime;
-let historyTableBody;
+let finalAvgTime, totalQuestionsEl, finalCorrectEl, finalWrongEl, accuracyEl;
 
 // 选项存储
 let currentOptions = [];
@@ -38,7 +32,7 @@ let currentOptions = [];
 // 初始化
 function init() {
     console.log('========================================');
-    console.log('   开始初始化游戏 v1.5.0...');
+    console.log('   开始初始化游戏 v2.0...');
     console.log('========================================');
     console.log('');
     
@@ -53,39 +47,22 @@ function init() {
     avgTimeEl = document.getElementById('avgTime');
     progressFill = document.getElementById('progressFill');
     leaderboardList = document.getElementById('leaderboardList');
-    studentNameInput = document.getElementById('studentName');
-    studentClassInput = document.getElementById('studentClass');
-    finalStudentName = document.getElementById('finalStudentName');
-    finalStudentClass = document.getElementById('finalStudentClass');
+    finalAvgTime = document.getElementById('finalAvgTime');
     totalQuestionsEl = document.getElementById('totalQuestions');
     finalCorrectEl = document.getElementById('finalCorrect');
     finalWrongEl = document.getElementById('finalWrong');
     accuracyEl = document.getElementById('accuracy');
-    accuracyBars = document.getElementById('accuracyBars');
-    finalAvgTime = document.getElementById('finalAvgTime');
-    historyTableBody = document.getElementById('historyTableBody');
 
-    // 检查 DOM 元素是否获取成功
     console.log('DOM 元素检查:');
     console.log('  welcomeScreen:', !!welcomeScreen);
     console.log('  gameScreen:', !!gameScreen);
     console.log('  resultScreen:', !!resultScreen);
     console.log('  questionDisplay:', !!questionDisplay);
     console.log('  optionsGrid:', !!optionsGrid);
-    console.log('  currentQuestionEl:', !!currentQuestionEl);
     console.log('  correctCountEl:', !!correctCountEl);
-    console.log('  avgTimeEl:', !!avgTimeEl);
-    console.log('  progressFill:', !!progressFill);
-    console.log('  leaderboardList:', !!leaderboardList);
-    console.log('  studentNameInput:', !!studentNameInput);
-    console.log('  studentClassInput:', !!studentClassInput);
-    console.log('  historyTableBody:', !!historyTableBody);
     console.log('');
-
-    // 不使用事件委托，改为直接绑定
-    console.log('移除旧的事件监听器（如果存在）...');
     
-    // 重新绑定按钮事件
+    // 不使用事件委托，直接绑定按钮事件
     console.log('绑定按钮事件...');
     const startBtn = document.getElementById('startGameBtn');
     const stopBtn = document.getElementById('stopGameBtn');
@@ -143,15 +120,9 @@ function init() {
 // 开始游戏
 function startGame() {
     console.log('========================================');
-    console.log('   开始游戏 v1.5.0');
+    console.log('   开始游戏 v2.0');
     console.log('========================================');
     console.log('');
-    
-    // 获取学生信息
-    gameState.studentName = studentNameInput.value.trim() || '匿名学生';
-    gameState.studentClass = studentClassInput.value.trim() || '';
-    
-    console.log('学生信息:', gameState.studentName, gameState.studentClass);
     
     // 重置游戏状态
     gameState.isPlaying = true;
@@ -160,14 +131,12 @@ function startGame() {
     gameState.wrongCount = 0;
     gameState.totalTime = 0;
     gameState.canAnswer = true;
-    gameState.questionHistory = [];
     
     console.log('游戏状态重置:', {
         isPlaying: gameState.isPlaying,
         currentQuestion: gameState.currentQuestion,
         correctCount: gameState.correctCount,
-        wrongCount: gameState.wrongCount,
-        canAnswer: gameState.canAnswer
+        wrongCount: gameState.wrongCount
     });
     console.log('');
 
@@ -176,13 +145,9 @@ function startGame() {
     gameScreen.style.display = 'block';
 
     console.log('显示游戏屏幕');
-    console.log('  ✓ welcomeScreen.style.display = none');
-    console.log('  ✓ gameScreen.style.display = block');
-    console.log('  ✓ resultScreen.style.display = none');
     console.log('');
 
     updateStats();
-    console.log('调用 nextQuestion...');
     nextQuestion();
 }
 
@@ -262,20 +227,15 @@ function renderOptions(options) {
         btn.dataset.index = index;
         btn.dataset.value = option;
         
-        // 直接在按钮上绑定点击事件（不使用事件委托）
+        // 直接在按钮上绑定点击事件
         btn.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
             console.log('');
             console.log('========================================');
-            console.log('   按钮直接点击事件被触发！');
+            console.log('   按钮点击事件被触发！');
             console.log('========================================');
-            console.log('  e.target:', e.target);
-            console.log('  e.currentTarget:', e.currentTarget);
-            console.log('  button:', btn);
             console.log('  index:', index);
-            console.log('  dataset.index:', btn.dataset.index);
-            console.log('  dataset.value:', btn.dataset.value);
             console.log('  option:', option);
             console.log('  options[', index, ']:', options[index]);
             selectAnswer(options[index], btn, index);
@@ -292,7 +252,7 @@ function renderOptions(options) {
 // 选择答案
 function selectAnswer(answer, btn, index) {
     console.log('========================================');
-    console.log('   selectAnswer 被调用 v1.5.0');
+    console.log('   selectAnswer 被调用 v2.0');
     console.log('========================================');
     
     console.log('answer:', answer);
@@ -322,20 +282,6 @@ function selectAnswer(answer, btn, index) {
     console.log('  正确答案:', gameState.currentAnswer, '(类型:', typeof gameState.currentAnswer, ')');
     console.log('  解析后的正确答案:', parseInt(gameState.currentAnswer));
     console.log('  是否正确:', isCorrect);
-    
-    // 记录这道题的详细信息
-    const record = {
-        questionNumber: gameState.currentQuestion,
-        question: questionDisplay.textContent,
-        userAnswer: parseInt(answer),
-        correctAnswer: gameState.currentAnswer,
-        isCorrect: isCorrect,
-        timeUsed: timeUsed.toFixed(2)
-    };
-    
-    gameState.questionHistory.push(record);
-    
-    console.log('答题记录:', record);
 
     if (isCorrect) {
         gameState.correctCount++;
@@ -409,25 +355,17 @@ function stopGame() {
         ? ((gameState.correctCount / gameState.currentQuestion) * 100).toFixed(1)
         : 0;
 
-    // 保存到排行榜
-    if (gameState.currentQuestion >= 5) { // 至少答对5题才进入排行榜
+    // 保存到排行榜（至少答对5题才进入排行榜）
+    if (gameState.currentQuestion >= 5) {
         saveToLeaderboard(avgTime, gameState.correctCount, gameState.currentQuestion);
     }
 
     // 显示结果
-    finalStudentName.textContent = gameState.studentName;
-    finalStudentClass.textContent = gameState.studentClass || '未填写';
     finalAvgTime.textContent = `${avgTime}秒`;
     totalQuestionsEl.textContent = gameState.currentQuestion;
     finalCorrectEl.textContent = gameState.correctCount;
     finalWrongEl.textContent = gameState.wrongCount;
     accuracyEl.textContent = `${accuracy}%`;
-
-    // 显示正确率分析
-    renderAccuracyChart();
-
-    // 显示答题记录表格
-    renderHistoryTable();
 
     gameScreen.style.display = 'none';
     resultScreen.style.display = 'block';
@@ -436,79 +374,16 @@ function stopGame() {
     renderLeaderboard();
 }
 
-// 渲染正确率图表
-function renderAccuracyChart() {
-    if (gameState.questionHistory.length === 0) {
-        accuracyBars.innerHTML = '<p class="text-center text-muted">暂无答题记录</p>';
-        return;
-    }
-
-    // 按题型分类（乘数范围）
-    const range1 = gameState.questionHistory.filter(q => q.correctAnswer <= 20); // 1-20
-    const range2 = gameState.questionHistory.filter(q => q.correctAnswer > 20 && q.correctAnswer <= 50); // 21-50
-    const range3 = gameState.questionHistory.filter(q => q.correctAnswer > 50); // 51-81
-
-    const total = gameState.questionHistory.length;
-    const accuracy1 = range1.length > 0 ? ((range1.filter(r => r.isCorrect).length / range1.length) * 100).toFixed(1) : 0;
-    const accuracy2 = range2.length > 0 ? ((range2.filter(r => r.isCorrect).length / range2.length) * 100).toFixed(1) : 0;
-    const accuracy3 = range3.length > 0 ? ((range3.filter(r => r.isCorrect).length / range3.length) * 100).toFixed(1) : 0;
-
-    accuracyBars.innerHTML = `
-        <div class="chart-label">简单 (1-20): ${accuracy1}% (${range1.length}题)</div>
-        <div class="chart-bar">
-            <div class="chart-fill" style="width: ${accuracy1}%">${accuracy1}%</div>
-        </div>
-        <div class="chart-label">中等 (21-50): ${accuracy2}% (${range2.length}题)</div>
-        <div class="chart-bar">
-            <div class="chart-fill" style="width: ${accuracy2}%">${accuracy2}%</div>
-        </div>
-        <div class="chart-label">困难 (51-81): ${accuracy3}% (${range3.length}题)</div>
-        <div class="chart-bar">
-            <div class="chart-fill" style="width: ${accuracy3}%">${accuracy3}%</div>
-        </div>
-        <div class="chart-label">总体正确率: ${((gameState.correctCount / total) * 100).toFixed(1)}%</div>
-        <div class="chart-bar">
-            <div class="chart-fill" style="width: ${((gameState.correctCount / total) * 100).toFixed(1)}%">${((gameState.correctCount / total) * 100).toFixed(1)}%</div>
-        </div>
-    `;
-}
-
-// 渲染答题记录表格
-function renderHistoryTable() {
-    if (gameState.questionHistory.length === 0) {
-        historyTableBody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">暂无答题记录</td></tr>';
-        return;
-    }
-
-    historyTableBody.innerHTML = gameState.questionHistory.map((record, index) => {
-        const resultClass = record.isCorrect ? 'history-correct' : 'history-wrong';
-        const resultText = record.isCorrect ? '✓ 正确' : '✗ 错误';
-
-        return `
-            <tr>
-                <td>${record.questionNumber}</td>
-                <td>${record.question}</td>
-                <td>${record.userAnswer}</td>
-                <td>${record.correctAnswer}</td>
-                <td class="${resultClass}">${resultText}</td>
-                <td class="history-time">${record.timeUsed}秒</td>
-            </tr>
-        `;
-    }).join('');
-}
-
 // 保存到排行榜
 function saveToLeaderboard(avgTime, correctCount, totalQuestions) {
     const record = {
         date: new Date().toLocaleDateString('zh-CN'),
-        name: gameState.studentName,
-        class: gameState.studentClass,
+        name: '匿名学生',
         avgTime: parseFloat(avgTime),
         correctCount: correctCount,
         wrongCount: gameState.wrongCount,
         totalQuestions: totalQuestions,
-        accuracy: ((correctCount / totalQuestions) * 100).toFixed(1),
-        questionHistory: gameState.questionHistory
+        accuracy: ((correctCount / totalQuestions) * 100).toFixed(1)
     };
 
     gameState.leaderboard.push(record);
@@ -558,9 +433,6 @@ function renderLeaderboard() {
                 <div class="leaderboard-info">
                     <div class="leaderboard-name">${record.name}</div>
                     <div class="leaderboard-date">${record.date}</div>
-                    <div style="font-size: 0.9rem; color: #666;">
-                        ${record.class ? `班级: ${record.class}` : ''}
-                    </div>
                     <div>
                         正确率: <strong>${record.accuracy}%</strong>
                         (${record.correctCount}/${record.totalQuestions})
