@@ -1,6 +1,6 @@
 // 9x9乘法口诀表挑战游戏
 // 作者: 工匠
-// 版本: 1.3.0
+// 版本: 1.4.0
 
 // 游戏状态
 const gameState = {
@@ -56,9 +56,8 @@ function init() {
     finalAvgTime = document.getElementById('finalAvgTime');
     historyTableBody = document.getElementById('historyTableBody');
 
-    // 加载排行榜
-    loadLeaderboard();
-    renderLeaderboard();
+    // 使用事件委托处理选项点击
+    optionsGrid.addEventListener('click', handleOptionClick);
     
     // 绑定按钮事件
     document.getElementById('startGameBtn').addEventListener('click', startGame);
@@ -66,12 +65,27 @@ function init() {
     document.getElementById('restartBtn').addEventListener('click', startGame);
     document.getElementById('homeBtn').addEventListener('click', showWelcome);
     
-    // 暴露函数到全局对象（供 HTML onclick 使用）
-    window.game = {
-        selectAnswer: selectAnswer
-    };
+    // 加载排行榜
+    loadLeaderboard();
+    renderLeaderboard();
     
     console.log('初始化完成');
+}
+
+// 处理选项点击（事件委托）
+function handleOptionClick(event) {
+    const btn = event.target.closest('.option-btn');
+    if (!btn || btn.disabled) {
+        return;
+    }
+    
+    const index = parseInt(btn.dataset.index);
+    const answer = currentOptions[index];
+    
+    console.log('按钮被点击，index:', index, 'answer:', answer);
+    console.log('选项数组:', currentOptions);
+    
+    selectAnswer(answer, btn, index);
 }
 
 // 开始游戏
@@ -169,19 +183,24 @@ function renderOptions(options) {
         const btn = document.createElement('button');
         btn.className = 'option-btn';
         btn.textContent = option;
-        btn.dataset.value = option;
-        btn.onclick = () => selectAnswer(option, btn);
+        btn.dataset.index = index;
         optionsGrid.appendChild(btn);
     });
 }
 
 // 选择答案
-function selectAnswer(answer, btn) {
-    console.log('选择答案:', answer);
-    console.log('当前答案:', gameState.currentAnswer);
+function selectAnswer(answer, btn, index) {
+    console.log('========================================');
+    console.log('选择答案被调用');
+    console.log('answer:', answer);
+    console.log('btn:', btn);
+    console.log('index:', index);
+    console.log('currentAnswer:', gameState.currentAnswer);
+    console.log('gameState.isPlaying:', gameState.isPlaying);
+    console.log('gameState.canAnswer:', gameState.canAnswer);
     
     if (!gameState.isPlaying || !gameState.canAnswer) {
-        console.log('游戏未开始或已禁用');
+        console.log('游戏未开始或已禁用，返回');
         return;
     }
 
@@ -194,14 +213,17 @@ function selectAnswer(answer, btn) {
     // 检查答案
     const isCorrect = parseInt(answer) === gameState.currentAnswer;
     
-    console.log('是否正确:', isCorrect);
-    console.log('用户答案（解析后）:', parseInt(answer));
+    console.log('答案比较:');
+    console.log('  用户的答案:', answer, '(类型:', typeof answer, ')');
+    console.log('  解析后的答案:', parseInt(answer));
+    console.log('  正确答案:', gameState.currentAnswer);
+    console.log('  是否正确:', isCorrect);
     
     // 记录这道题的详细信息
     const record = {
         questionNumber: gameState.currentQuestion,
         question: questionDisplay.textContent,
-        userAnswer: answer,
+        userAnswer: parseInt(answer),
         correctAnswer: gameState.currentAnswer,
         isCorrect: isCorrect,
         timeUsed: timeUsed.toFixed(2)
@@ -213,16 +235,16 @@ function selectAnswer(answer, btn) {
 
     if (isCorrect) {
         gameState.correctCount++;
-        console.log('正确数增加到:', gameState.correctCount);
+        console.log('✓ 答案正确，正确数增加到:', gameState.correctCount);
         btn.classList.add('correct');
     } else {
         gameState.wrongCount++;
-        console.log('错误数增加到:', gameState.wrongCount);
+        console.log('✗ 答案错误，错误数增加到:', gameState.wrongCount);
         btn.classList.add('wrong');
         // 高亮正确答案
         const allBtns = optionsGrid.querySelectorAll('.option-btn');
         allBtns.forEach(button => {
-            if (parseInt(button.dataset.value) === gameState.currentAnswer) {
+            if (parseInt(button.textContent) === gameState.currentAnswer) {
                 button.classList.add('correct');
             }
         });
@@ -237,7 +259,9 @@ function selectAnswer(answer, btn) {
     // 更新统计
     console.log('调用 updateStats 前，correctCount:', gameState.correctCount);
     updateStats();
-    console.log('调用 updateStats 后');
+    console.log('调用 updateStats 后，correctCount:', gameState.correctCount);
+    
+    console.log('========================================');
 
     // 延迟后进入下一题
     setTimeout(() => {
@@ -247,6 +271,10 @@ function selectAnswer(answer, btn) {
 
 // 更新统计
 function updateStats() {
+    console.log('更新统计:');
+    console.log('  currentQuestion:', gameState.currentQuestion);
+    console.log('  correctCount:', gameState.correctCount);
+    
     currentQuestionEl.textContent = gameState.currentQuestion;
     correctCountEl.textContent = gameState.correctCount;
 
@@ -258,6 +286,8 @@ function updateStats() {
     // 更新进度条
     const progress = Math.min((gameState.currentQuestion / 10) * 100, 100);
     progressFill.style.width = `${progress}%`;
+    
+    console.log('  更新完成');
 }
 
 // 停止游戏

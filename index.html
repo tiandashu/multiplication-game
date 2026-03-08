@@ -302,57 +302,6 @@
             color: #667eea;
         }
 
-        .history-item {
-            padding: 15px;
-            margin-bottom: 10px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .history-item.correct {
-            border-left: 4px solid #28a745;
-        }
-
-        .history-item.wrong {
-            border-left: 4px solid #dc3545;
-        }
-
-        .accuracy-chart {
-            margin-top: 30px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 15px;
-        }
-
-        .chart-bar {
-            height: 40px;
-            background: #e9ecef;
-            border-radius: 20px;
-            overflow: hidden;
-            margin-bottom: 15px;
-            position: relative;
-        }
-
-        .chart-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-            transition: width 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            padding-right: 15px;
-            color: white;
-            font-weight: bold;
-        }
-
-        .chart-label {
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #333;
-        }
-
-        /* 答题记录表格 */
         .answer-history {
             margin-top: 30px;
             padding: 20px;
@@ -409,9 +358,38 @@
             font-size: 1.1rem;
         }
 
-        .history-time {
-            font-size: 0.9rem;
-            color: #666;
+        .accuracy-chart {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+
+        .chart-bar {
+            height: 40px;
+            background: #e9ecef;
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .chart-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 15px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .chart-label {
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
         }
 
         /* 移动端优化 */
@@ -613,10 +591,10 @@
             </div>
 
             <div class="options-grid" id="optionsGrid">
-                <button class="option-btn" onclick="window.game.selectAnswer(0)">1</button>
-                <button class="option-btn" onclick="window.game.selectAnswer(1)">2</button>
-                <button class="option-btn" onclick="window.game.selectAnswer(2)">3</button>
-                <button class="option-btn" onclick="window.game.selectAnswer(3)">4</button>
+                <button class="option-btn" data-index="0">1</button>
+                <button class="option-btn" data-index="1">2</button>
+                <button class="option-btn" data-index="2">3</button>
+                <button class="option-btn" data-index="3">4</button>
             </div>
 
             <div class="text-center">
