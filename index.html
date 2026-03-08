@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>9×9 乘法口诀挑战</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🧮 9×9 乘法口诀挑战</h1>
+            <p class="subtitle">帮助小朋友加深乘法记忆</p>
+        </header>
+
+        <!-- 开始界面 -->
+        <div id="start-screen" class="screen">
+            <div class="welcome">
+                <p>准备好挑战了吗？</p>
+                <p class="hint">每次会随机出一道乘法题，选择正确答案！</p>
+            </div>
+            <button id="start-btn" class="btn primary">开始挑战 🚀</button>
+            <div class="info">
+                <p>💡 提示：点击答案后立即进入下一题</p>
+            </div>
+        </div>
+
+        <!-- 答题界面 -->
+        <div id="game-screen" class="screen hidden">
+            <div class="game-info">
+                <div class="stat">
+                    <span class="label">题目</span>
+                    <span class="value" id="question-number">1</span>
+                </div>
+                <div class="stat">
+                    <span class="label">用时</span>
+                    <span class="value" id="timer">0.0s</span>
+                </div>
+                <div class="stat">
+                    <span class="label">正确率</span>
+                    <span class="value" id="accuracy">0%</span>
+                </div>
+            </div>
+
+            <div class="question-box">
+                <div id="question" class="question">? × ? = ?</div>
+            </div>
+
+            <div id="answers" class="answers">
+                <!-- 答案选项会动态生成 -->
+            </div>
+
+            <button id="stop-btn" class="btn secondary">停止挑战 ⏹️</button>
+        </div>
+
+        <!-- 结果界面 -->
+        <div id="result-screen" class="screen hidden">
+            <h2>🎉 挑战完成！</h2>
+
+            <div class="summary">
+                <div class="summary-item">
+                    <span class="label">总题数</span>
+                    <span class="value" id="total-questions">0</span>
+                </div>
+                <div class="summary-item">
+                    <span class="label">正确题数</span>
+                    <span class="value" id="correct-count">0</span>
+                </div>
+                <div class="summary-item">
+                    <span class="label">正确率</span>
+                    <span class="value" id="final-accuracy">0%</span>
+                </div>
+                <div class="summary-item highlight">
+                    <span class="label">平均用时</span>
+                    <span class="value" id="avg-time">0.0s</span>
+                </div>
+            </div>
+
+            <h3>🏆 本局排行榜</h3>
+            <div id="current-rankings" class="rankings">
+                <!-- 当前答题排行榜 -->
+            </div>
+
+            <div class="buttons">
+                <button id="restart-btn" class="btn primary">再来一次 🔄</button>
+                <button id="view-leaderboard-btn" class="btn secondary">查看历史记录 📊</button>
+            </div>
+        </div>
+
+        <!-- 排行榜界面 -->
+        <div id="leaderboard-screen" class="screen hidden">
+            <h2>📊 历史排行榜</h2>
+            <p class="subtitle">按平均用时排名</p>
+
+            <div id="leaderboard" class="rankings">
+                <!-- 历史排行榜 -->
+            </div>
+
+            <div id="no-records" class="no-records hidden">
+                <p>暂无记录</p>
+                <p>完成一次挑战后才会记录哦！</p>
+            </div>
+
+            <button id="back-to-result-btn" class="btn secondary">返回结果 ⬅️</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
