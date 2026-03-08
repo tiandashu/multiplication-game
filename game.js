@@ -1,9 +1,9 @@
 // 9x9乘法口诀表挑战游戏
 // 作者: 工匠
-// 版本: 1.0.0
+// 版本: 1.0.1
 
 // 游戏状态
-let gameState = {
+const gameState = {
     isPlaying: false,
     currentQuestion: 0,
     correctCount: 0,
@@ -15,25 +15,44 @@ let gameState = {
 };
 
 // DOM 元素
-const welcomeScreen = document.getElementById('welcomeScreen');
-const gameScreen = document.getElementById('gameScreen');
-const resultScreen = document.getElementById('resultScreen');
-const questionDisplay = document.getElementById('questionDisplay');
-const optionsGrid = document.getElementById('optionsGrid');
-const currentQuestionEl = document.getElementById('currentQuestion');
-const correctCountEl = document.getElementById('correctCount');
-const avgTimeEl = document.getElementById('avgTime');
-const progressFill = document.getElementById('progressFill');
-const leaderboardList = document.getElementById('leaderboardList');
+let welcomeScreen, gameScreen, resultScreen, questionDisplay, optionsGrid;
+let currentQuestionEl, correctCountEl, avgTimeEl, progressFill, leaderboardList;
+
+// 选项存储
+let currentOptions = [];
 
 // 初始化
 function init() {
+    console.log('初始化游戏...');
+    
+    // 获取 DOM 元素
+    welcomeScreen = document.getElementById('welcomeScreen');
+    gameScreen = document.getElementById('gameScreen');
+    resultScreen = document.getElementById('resultScreen');
+    questionDisplay = document.getElementById('questionDisplay');
+    optionsGrid = document.getElementById('optionsGrid');
+    currentQuestionEl = document.getElementById('currentQuestion');
+    correctCountEl = document.getElementById('correctCount');
+    avgTimeEl = document.getElementById('avgTime');
+    progressFill = document.getElementById('progressFill');
+    leaderboardList = document.getElementById('leaderboardList');
+
+    // 加载排行榜
     loadLeaderboard();
     renderLeaderboard();
+    
+    // 绑定按钮事件
+    document.getElementById('startGameBtn').addEventListener('click', startGame);
+    document.getElementById('stopGameBtn').addEventListener('click', stopGame);
+    document.getElementById('restartBtn').addEventListener('click', startGame);
+    document.getElementById('homeBtn').addEventListener('click', showWelcome);
+    
+    console.log('初始化完成');
 }
 
 // 开始游戏
 function startGame() {
+    console.log('开始游戏');
     gameState.isPlaying = true;
     gameState.currentQuestion = 0;
     gameState.correctCount = 0;
@@ -62,8 +81,8 @@ function nextQuestion() {
     questionDisplay.textContent = `${num1} × ${num2} = ?`;
 
     // 生成选项 (1个正确 + 3个错误)
-    const options = generateOptions(gameState.currentAnswer);
-    renderOptions(options);
+    currentOptions = generateOptions(gameState.currentAnswer);
+    renderOptions(currentOptions);
 
     // 记录开始时间
     gameState.questionStartTime = Date.now();
@@ -114,6 +133,7 @@ function renderOptions(options) {
         const btn = document.createElement('button');
         btn.className = 'option-btn';
         btn.textContent = option;
+        btn.dataset.value = option;
         btn.onclick = () => selectAnswer(option, btn);
         optionsGrid.appendChild(btn);
     });
@@ -121,6 +141,8 @@ function renderOptions(options) {
 
 // 选择答案
 function selectAnswer(answer, btn) {
+    console.log('选择答案:', answer);
+    
     if (!gameState.isPlaying || !gameState.canAnswer) {
         return;
     }
@@ -135,14 +157,13 @@ function selectAnswer(answer, btn) {
     const isCorrect = answer === gameState.currentAnswer;
 
     if (isCorrect) {
-        gameState.correctCount++;
         btn.classList.add('correct');
     } else {
         btn.classList.add('wrong');
         // 高亮正确答案
         const allBtns = optionsGrid.querySelectorAll('.option-btn');
         allBtns.forEach(button => {
-            if (parseInt(button.textContent) === gameState.currentAnswer) {
+            if (parseInt(button.dataset.value) === gameState.currentAnswer) {
                 button.classList.add('correct');
             }
         });

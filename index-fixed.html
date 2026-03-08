@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>9x9乘法口诀表挑战</title>
+    <title>9x9乘法口诀表挑战 - 测试版</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <style>
@@ -234,7 +234,7 @@
                 点击开始挑战，随机出题，快速选择正确答案。<br>
                 系统会记录你的答题时间，看看你能得多少分！
             </p>
-            <button class="control-btn btn-start" id="startGameBtn">
+            <button class="control-btn btn-start" id="startBtn">
                 <i class="bi bi-play-circle"></i> 开始挑战
             </button>
         </div>
@@ -265,14 +265,14 @@
             </div>
 
             <div class="options-grid" id="optionsGrid">
-                <button class="option-btn" onclick="window.game.selectAnswer(0)">1</button>
-                <button class="option-btn" onclick="window.game.selectAnswer(1)">2</button>
-                <button class="option-btn" onclick="window.game.selectAnswer(2)">3</button>
-                <button class="option-btn" onclick="window.game.selectAnswer(3)">4</button>
+                <button class="option-btn" data-index="0">1</button>
+                <button class="option-btn" data-index="1">2</button>
+                <button class="option-btn" data-index="2">3</button>
+                <button class="option-btn" data-index="3">4</button>
             </div>
 
             <div class="text-center">
-                <button class="control-btn btn-stop" id="stopGameBtn">
+                <button class="control-btn btn-stop" id="stopBtn">
                     <i class="bi bi-stop-circle"></i> 停止挑战
                 </button>
             </div>
@@ -299,18 +299,223 @@
                 </button>
             </div>
         </div>
-
-        <!-- 排行榜 -->
-        <div class="mt-4" id="leaderboard">
-            <div class="text-center" style="margin-bottom: 20px; color: #333; font-weight: bold; font-size: 24px;">
-                <i class="bi bi-trophy"></i> 排行榜
-            </div>
-            <div id="leaderboardList" style="background: #f8f9fa; padding: 20px; border-radius: 15px;">
-                <p class="text-center text-muted">暂无记录</p>
-            </div>
-        </div>
     </div>
 
-    <script src="game.js"></script>
+    <script>
+        // 9x9乘法口诀表挑战游戏 - 内联版本
+        // 作者: 工匠
+        // 版本: 1.0.0
+
+        // 游戏状态
+        const gameState = {
+            isPlaying: false,
+            currentQuestion: 0,
+            correctCount: 0,
+            totalTime: 0,
+            questionStartTime: 0,
+            currentAnswer: 0,
+            canAnswer: true
+        };
+
+        // DOM 元素
+        const welcomeScreen = document.getElementById('welcomeScreen');
+        const gameScreen = document.getElementById('gameScreen');
+        const resultScreen = document.getElementById('resultScreen');
+        const questionDisplay = document.getElementById('questionDisplay');
+        const optionsGrid = document.getElementById('optionsGrid');
+        const currentQuestionEl = document.getElementById('currentQuestion');
+        const correctCountEl = document.getElementById('correctCount');
+        const avgTimeEl = document.getElementById('avgTime');
+        const progressFill = document.getElementById('progressFill');
+
+        // 绑定按钮事件
+        document.getElementById('startBtn').addEventListener('click', startGame);
+        document.getElementById('stopBtn').addEventListener('click', stopGame);
+        document.getElementById('restartBtn').addEventListener('click', startGame);
+        document.getElementById('homeBtn').addEventListener('click', showWelcome);
+
+        // 开始游戏
+        function startGame() {
+            console.log('开始游戏');
+            gameState.isPlaying = true;
+            gameState.currentQuestion = 0;
+            gameState.correctCount = 0;
+            gameState.totalTime = 0;
+            gameState.canAnswer = true;
+
+            welcomeScreen.style.display = 'none';
+            resultScreen.style.display = 'none';
+            gameScreen.style.display = 'block';
+
+            updateStats();
+            nextQuestion();
+        }
+
+        // 下一题
+        function nextQuestion() {
+            gameState.currentQuestion++;
+            gameState.canAnswer = true;
+
+            // 生成题目 (1-9 之间的乘法)
+            const num1 = Math.floor(Math.random() * 9) + 1;
+            const num2 = Math.floor(Math.random() * 9) + 1;
+            gameState.currentAnswer = num1 * num2;
+
+            // 显示题目
+            questionDisplay.textContent = `${num1} × ${num2} = ?`;
+
+            // 生成选项 (1个正确 + 3个错误)
+            const options = generateOptions(gameState.currentAnswer);
+            renderOptions(options);
+
+            // 记录开始时间
+            gameState.questionStartTime = Date.now();
+
+            // 更新统计
+            updateStats();
+        }
+
+        // 生成选项
+        function generateOptions(correctAnswer) {
+            const options = [correctAnswer];
+
+            // 生成3个混淆项
+            while (options.length < 4) {
+                let wrongAnswer;
+                if (Math.random() > 0.5) {
+                    const offset = Math.floor(Math.random() * 5) + 1;
+                    wrongAnswer = correctAnswer + (Math.random() > 0.5 ? offset : -offset);
+                } else {
+                    wrongAnswer = Math.floor(Math.random() * 81) + 1;
+                }
+
+                if (wrongAnswer > 0 && !options.includes(wrongAnswer)) {
+                    options.push(wrongAnswer);
+                }
+            }
+
+            // 打乱顺序
+            return shuffleArray(options);
+        }
+
+        // 打乱数组
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        // 渲染选项
+        function renderOptions(options) {
+            optionsGrid.innerHTML = '';
+            options.forEach((option, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = option;
+                btn.dataset.value = option;
+                btn.addEventListener('click', () => selectAnswer(option, btn));
+                optionsGrid.appendChild(btn);
+            });
+        }
+
+        // 选择答案
+        function selectAnswer(answer, btn) {
+            if (!gameState.isPlaying || !gameState.canAnswer) {
+                return;
+            }
+
+            gameState.canAnswer = false;
+
+            // 计算用时
+            const timeUsed = (Date.now() - gameState.questionStartTime) / 1000;
+            gameState.totalTime += timeUsed;
+
+            // 检查答案
+            const isCorrect = answer === gameState.currentAnswer;
+
+            if (isCorrect) {
+                gameState.correctCount++;
+                btn.classList.add('correct');
+            } else {
+                btn.classList.add('wrong');
+                // 高亮正确答案
+                const allBtns = optionsGrid.querySelectorAll('.option-btn');
+                allBtns.forEach(button => {
+                    if (parseInt(button.dataset.value) === gameState.currentAnswer) {
+                        button.classList.add('correct');
+                    }
+                });
+            }
+
+            // 禁用所有按钮
+            const allBtns = optionsGrid.querySelectorAll('.option-btn');
+            allBtns.forEach(button => {
+                button.disabled = true;
+            });
+
+            // 更新统计
+            updateStats();
+
+            // 延迟后进入下一题
+            setTimeout(() => {
+                nextQuestion();
+            }, 800);
+        }
+
+        // 更新统计
+        function updateStats() {
+            currentQuestionEl.textContent = gameState.currentQuestion;
+            correctCountEl.textContent = gameState.correctCount;
+
+            if (gameState.currentQuestion > 0) {
+                const avgTime = (gameState.totalTime / gameState.currentQuestion).toFixed(2);
+                avgTimeEl.textContent = avgTime;
+            }
+
+            // 更新进度条
+            const progress = Math.min((gameState.currentQuestion / 10) * 100, 100);
+            progressFill.style.width = `${progress}%`;
+        }
+
+        // 停止游戏
+        function stopGame() {
+            if (!gameState.isPlaying) {
+                return;
+            }
+
+            gameState.isPlaying = false;
+
+            // 计算统计数据
+            const avgTime = gameState.currentQuestion > 0
+                ? (gameState.totalTime / gameState.currentQuestion).toFixed(2)
+                : 0;
+            const accuracy = gameState.currentQuestion > 0
+                ? ((gameState.correctCount / gameState.currentQuestion) * 100).toFixed(1)
+                : 0;
+
+            // 显示结果
+            document.getElementById('finalAvgTime').textContent = `${avgTime}秒`;
+            document.getElementById('totalQuestions').textContent = gameState.currentQuestion;
+            document.getElementById('finalCorrect').textContent = gameState.correctCount;
+            document.getElementById('accuracy').textContent = `${accuracy}%`;
+
+            gameScreen.style.display = 'none';
+            resultScreen.style.display = 'block';
+        }
+
+        // 显示欢迎屏幕
+        function showWelcome() {
+            resultScreen.style.display = 'none';
+            welcomeScreen.style.display = 'block';
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('游戏初始化完成');
+        });
+    </script>
 </body>
 </html>
