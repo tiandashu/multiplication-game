@@ -1,9 +1,9 @@
 // 9x9乘法口诀表挑战游戏
 // 作者: 工匠
-// 版本: 1.4.0
+// 版本: 1.5.0
 
 console.log('========================================');
-console.log('   9x9乘法口诀表挑战 v1.4.0');
+console.log('   9x9乘法口诀表挑战 v1.5.0');
 console.log('   作者: 工匠');
 console.log('========================================');
 console.log('');
@@ -38,7 +38,7 @@ let currentOptions = [];
 // 初始化
 function init() {
     console.log('========================================');
-    console.log('   开始初始化游戏 v1.4.0...');
+    console.log('   开始初始化游戏 v1.5.0...');
     console.log('========================================');
     console.log('');
     
@@ -72,27 +72,59 @@ function init() {
     console.log('  resultScreen:', !!resultScreen);
     console.log('  questionDisplay:', !!questionDisplay);
     console.log('  optionsGrid:', !!optionsGrid);
+    console.log('  currentQuestionEl:', !!currentQuestionEl);
     console.log('  correctCountEl:', !!correctCountEl);
+    console.log('  avgTimeEl:', !!avgTimeEl);
+    console.log('  progressFill:', !!progressFill);
+    console.log('  leaderboardList:', !!leaderboardList);
+    console.log('  studentNameInput:', !!studentNameInput);
+    console.log('  studentClassInput:', !!studentClassInput);
+    console.log('  historyTableBody:', !!historyTableBody);
     console.log('');
 
-    // 使用事件委托处理选项点击
-    console.log('设置事件委托...');
-    optionsGrid.addEventListener('click', handleOptionClick);
-    console.log('  ✓ 事件委托已绑定到 optionsGrid');
+    // 不使用事件委托，改为直接绑定
+    console.log('移除旧的事件监听器（如果存在）...');
     
-    // 绑定按钮事件
+    // 重新绑定按钮事件
     console.log('绑定按钮事件...');
-    document.getElementById('startGameBtn').addEventListener('click', startGame);
-    console.log('  ✓ startGameBtn 事件已绑定');
+    const startBtn = document.getElementById('startGameBtn');
+    const stopBtn = document.getElementById('stopGameBtn');
+    const restartBtn = document.getElementById('restartBtn');
+    const homeBtn = document.getElementById('homeBtn');
     
-    document.getElementById('stopGameBtn').addEventListener('click', stopGame);
-    console.log('  ✓ stopGameBtn 事件已绑定');
+    if (startBtn) {
+        // 移除旧事件
+        const newStartBtn = startBtn.cloneNode(true);
+        startBtn.parentNode.replaceChild(newStartBtn, startBtn);
+        
+        newStartBtn.addEventListener('click', startGame);
+        console.log('  ✓ startGameBtn 事件已绑定');
+    }
     
-    document.getElementById('restartBtn').addEventListener('click', startGame);
-    console.log('  ✓ restartBtn 事件已绑定');
+    if (stopBtn) {
+        const newStopBtn = stopBtn.cloneNode(true);
+        stopBtn.parentNode.replaceChild(newStopBtn, stopBtn);
+        
+        newStopBtn.addEventListener('click', stopGame);
+        console.log('  ✓ stopGameBtn 事件已绑定');
+    }
     
-    document.getElementById('homeBtn').addEventListener('click', showWelcome);
-    console.log('  ✓ homeBtn 事件已绑定');
+    if (restartBtn) {
+        const newRestartBtn = restartBtn.cloneNode(true);
+        restartBtn.parentNode.replaceChild(newRestartBtn, restartBtn);
+        
+        newRestartBtn.addEventListener('click', startGame);
+        console.log('  ✓ restartBtn 事件已绑定');
+    }
+    
+    if (homeBtn) {
+        const newHomeBtn = homeBtn.cloneNode(true);
+        homeBtn.parentNode.replaceChild(newHomeBtn, homeBtn);
+        
+        newHomeBtn.addEventListener('click', showWelcome);
+        console.log('  ✓ homeBtn 事件已绑定');
+    }
+    
     console.log('');
     
     // 加载排行榜
@@ -108,36 +140,10 @@ function init() {
     console.log('========================================');
 }
 
-// 处理选项点击（事件委托）
-function handleOptionClick(event) {
-    console.log('========================================');
-    console.log('   事件委托被触发！');
-    console.log('========================================');
-    
-    const btn = event.target.closest('.option-btn');
-    console.log('被点击的按钮:', btn);
-    
-    if (!btn || btn.disabled) {
-        console.log('按钮不存在或已禁用，返回');
-        return;
-    }
-    
-    const index = parseInt(btn.dataset.index);
-    const answer = currentOptions[index];
-    
-    console.log('点击信息:');
-    console.log('  index:', index);
-    console.log('  answer:', answer);
-    console.log('  currentOptions:', currentOptions);
-    console.log('  btn.dataset.index:', btn.dataset.index);
-    
-    selectAnswer(answer, btn, index);
-}
-
 // 开始游戏
 function startGame() {
     console.log('========================================');
-    console.log('   开始游戏 v1.4.0');
+    console.log('   开始游戏 v1.5.0');
     console.log('========================================');
     console.log('');
     
@@ -239,26 +245,60 @@ function shuffleArray(array) {
     return newArray;
 }
 
-// 渲染选项
+// 渲染选项（直接绑定点击事件）
 function renderOptions(options) {
+    console.log('渲染选项...');
+    console.log('  清空 optionsGrid...');
+    
+    // 清空旧按钮
     optionsGrid.innerHTML = '';
+    
     options.forEach((option, index) => {
+        console.log(`  创建按钮 ${index}: ${option}`);
+        
         const btn = document.createElement('button');
         btn.className = 'option-btn';
         btn.textContent = option;
         btn.dataset.index = index;
+        btn.dataset.value = option;
+        
+        // 直接在按钮上绑定点击事件（不使用事件委托）
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('');
+            console.log('========================================');
+            console.log('   按钮直接点击事件被触发！');
+            console.log('========================================');
+            console.log('  e.target:', e.target);
+            console.log('  e.currentTarget:', e.currentTarget);
+            console.log('  button:', btn);
+            console.log('  index:', index);
+            console.log('  dataset.index:', btn.dataset.index);
+            console.log('  dataset.value:', btn.dataset.value);
+            console.log('  option:', option);
+            console.log('  options[', index, ']:', options[index]);
+            selectAnswer(options[index], btn, index);
+        });
+        
         optionsGrid.appendChild(btn);
     });
+    
+    const buttons = optionsGrid.querySelectorAll('.option-btn');
+    console.log(`  ✓ optionsGrid 中共有 ${buttons.length} 个按钮`);
+    console.log('  ✓ 渲染完成');
 }
 
 // 选择答案
 function selectAnswer(answer, btn, index) {
     console.log('========================================');
-    console.log('选择答案被调用');
+    console.log('   selectAnswer 被调用 v1.5.0');
+    console.log('========================================');
+    
     console.log('answer:', answer);
     console.log('btn:', btn);
     console.log('index:', index);
-    console.log('currentAnswer:', gameState.currentAnswer);
+    console.log('gameState.currentAnswer:', gameState.currentAnswer);
     console.log('gameState.isPlaying:', gameState.isPlaying);
     console.log('gameState.canAnswer:', gameState.canAnswer);
     
@@ -274,12 +314,13 @@ function selectAnswer(answer, btn, index) {
     gameState.totalTime += timeUsed;
 
     // 检查答案
-    const isCorrect = parseInt(answer) === gameState.currentAnswer;
+    const isCorrect = parseInt(answer) === parseInt(gameState.currentAnswer);
     
     console.log('答案比较:');
     console.log('  用户的答案:', answer, '(类型:', typeof answer, ')');
     console.log('  解析后的答案:', parseInt(answer));
-    console.log('  正确答案:', gameState.currentAnswer);
+    console.log('  正确答案:', gameState.currentAnswer, '(类型:', typeof gameState.currentAnswer, ')');
+    console.log('  解析后的正确答案:', parseInt(gameState.currentAnswer));
     console.log('  是否正确:', isCorrect);
     
     // 记录这道题的详细信息
@@ -307,7 +348,7 @@ function selectAnswer(answer, btn, index) {
         // 高亮正确答案
         const allBtns = optionsGrid.querySelectorAll('.option-btn');
         allBtns.forEach(button => {
-            if (parseInt(button.textContent) === gameState.currentAnswer) {
+            if (parseInt(button.dataset.value) === parseInt(gameState.currentAnswer)) {
                 button.classList.add('correct');
             }
         });
@@ -323,9 +364,8 @@ function selectAnswer(answer, btn, index) {
     console.log('调用 updateStats 前，correctCount:', gameState.correctCount);
     updateStats();
     console.log('调用 updateStats 后，correctCount:', gameState.correctCount);
+    console.log('');
     
-    console.log('========================================');
-
     // 延迟后进入下一题
     setTimeout(() => {
         nextQuestion();
@@ -350,7 +390,7 @@ function updateStats() {
     const progress = Math.min((gameState.currentQuestion / 10) * 100, 100);
     progressFill.style.width = `${progress}%`;
     
-    console.log('  更新完成');
+    console.log('  ✓ 更新完成');
 }
 
 // 停止游戏
