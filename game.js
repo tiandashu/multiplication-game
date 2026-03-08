@@ -1,6 +1,6 @@
 // 9x9乘法口诀表挑战游戏
 // 作者: 工匠
-// 版本: 1.2.0
+// 版本: 1.3.0
 
 // 游戏状态
 const gameState = {
@@ -14,7 +14,7 @@ const gameState = {
     canAnswer: true,
     studentName: '',
     studentClass: '',
-    questionHistory: [], // 记录每道题的答案
+    questionHistory: [], // 记录每道题的详细信息
     leaderboard: []
 };
 
@@ -22,8 +22,9 @@ const gameState = {
 let welcomeScreen, gameScreen, resultScreen, questionDisplay, optionsGrid;
 let currentQuestionEl, correctCountEl, avgTimeEl, progressFill, leaderboardList;
 let studentNameInput, studentClassInput;
-let finalStudentName, finalStudentClass, totalQuestionsEl, finalCorrectEl, accuracyEl;
+let finalStudentName, finalStudentClass, totalQuestionsEl, finalCorrectEl, finalWrongEl, accuracyEl;
 let accuracyBars, finalAvgTime;
+let historyTableBody;
 
 // 选项存储
 let currentOptions = [];
@@ -49,9 +50,11 @@ function init() {
     finalStudentClass = document.getElementById('finalStudentClass');
     totalQuestionsEl = document.getElementById('totalQuestions');
     finalCorrectEl = document.getElementById('finalCorrect');
+    finalWrongEl = document.getElementById('finalWrong');
     accuracyEl = document.getElementById('accuracy');
     accuracyBars = document.getElementById('accuracyBars');
     finalAvgTime = document.getElementById('finalAvgTime');
+    historyTableBody = document.getElementById('historyTableBody');
 
     // 加载排行榜
     loadLeaderboard();
@@ -181,14 +184,17 @@ function selectAnswer(answer, btn) {
     // 检查答案
     const isCorrect = answer === gameState.currentAnswer;
     
-    // 记录这道题的信息
+    // 记录这道题的详细信息
     gameState.questionHistory.push({
+        questionNumber: gameState.currentQuestion,
         question: questionDisplay.textContent,
-        correctAnswer: gameState.currentAnswer,
         userAnswer: answer,
+        correctAnswer: gameState.currentAnswer,
         isCorrect: isCorrect,
-        timeUsed: timeUsed
+        timeUsed: timeUsed.toFixed(2)
     });
+
+    console.log('答题历史:', gameState.questionHistory[gameState.questionHistory.length - 1]);
 
     if (isCorrect) {
         gameState.correctCount++;
@@ -262,10 +268,14 @@ function stopGame() {
     finalAvgTime.textContent = `${avgTime}秒`;
     totalQuestionsEl.textContent = gameState.currentQuestion;
     finalCorrectEl.textContent = gameState.correctCount;
+    finalWrongEl.textContent = gameState.wrongCount;
     accuracyEl.textContent = `${accuracy}%`;
 
     // 显示正确率分析
     renderAccuracyChart();
+
+    // 显示答题记录表格
+    renderHistoryTable();
 
     gameScreen.style.display = 'none';
     resultScreen.style.display = 'block';
@@ -311,6 +321,30 @@ function renderAccuracyChart() {
     `;
 }
 
+// 渲染答题记录表格
+function renderHistoryTable() {
+    if (gameState.questionHistory.length === 0) {
+        historyTableBody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">暂无答题记录</td></tr>';
+        return;
+    }
+
+    historyTableBody.innerHTML = gameState.questionHistory.map((record, index) => {
+        const resultClass = record.isCorrect ? 'history-correct' : 'history-wrong';
+        const resultText = record.isCorrect ? '✓ 正确' : '✗ 错误';
+
+        return `
+            <tr>
+                <td>${record.questionNumber}</td>
+                <td>${record.question}</td>
+                <td>${record.userAnswer}</td>
+                <td>${record.correctAnswer}</td>
+                <td class="${resultClass}">${resultText}</td>
+                <td class="history-time">${record.timeUsed}秒</td>
+            </tr>
+        `;
+    }).join('');
+}
+
 // 保存到排行榜
 function saveToLeaderboard(avgTime, correctCount, totalQuestions) {
     const record = {
@@ -319,6 +353,7 @@ function saveToLeaderboard(avgTime, correctCount, totalQuestions) {
         class: gameState.studentClass,
         avgTime: parseFloat(avgTime),
         correctCount: correctCount,
+        wrongCount: gameState.wrongCount,
         totalQuestions: totalQuestions,
         accuracy: ((correctCount / totalQuestions) * 100).toFixed(1),
         questionHistory: gameState.questionHistory

@@ -20,7 +20,7 @@
         }
 
         .game-container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             padding: 20px;
             min-height: 100vh;
@@ -352,6 +352,68 @@
             color: #333;
         }
 
+        /* 答题记录表格 */
+        .answer-history {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            overflow-x: auto;
+        }
+
+        .history-title {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            min-width: 600px;
+        }
+
+        .history-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px;
+            text-align: center;
+            font-weight: bold;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .history-table td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 0.95rem;
+        }
+
+        .history-table tbody tr:hover {
+            background: #e9ecef;
+        }
+
+        .history-correct {
+            color: #28a745;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .history-wrong {
+            color: #dc3545;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .history-time {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
         /* 移动端优化 */
         @media (max-width: 768px) {
             .game-container {
@@ -412,6 +474,24 @@
             .options-grid {
                 gap: 10px;
             }
+
+            .answer-history {
+                padding: 10px;
+            }
+
+            .history-table {
+                font-size: 0.8rem;
+            }
+
+            .history-table th {
+                padding: 8px;
+                font-size: 0.75rem;
+            }
+
+            .history-table td {
+                padding: 8px;
+                font-size: 0.8rem;
+            }
         }
 
         /* 超小屏幕 */
@@ -442,6 +522,20 @@
 
             .title {
                 font-size: 1.3rem;
+            }
+
+            .history-table {
+                font-size: 0.7rem;
+            }
+
+            .history-table th {
+                padding: 6px;
+                font-size: 0.7rem;
+            }
+
+            .history-table td {
+                padding: 6px;
+                font-size: 0.75rem;
             }
         }
 
@@ -485,7 +579,7 @@
                 <p class="welcome-text">
                     欢迎来到9x9乘法口诀表挑战！<br>
                     点击开始挑战，随机出题，快速选择正确答案。<br>
-                    系统会记录你的答题时间，看看你能得多少分！
+                    系统会记录你的答题时间和正确率，看看你能得多少分！
                 </p>
                 <button class="control-btn btn-start" id="startGameBtn">
                     <i class="bi bi-play-circle"></i> 开始挑战
@@ -541,6 +635,7 @@
                 <p>班级: <strong id="finalStudentClass">-</strong></p>
                 <p>总题数: <strong id="totalQuestions">0</strong></p>
                 <p>正确数: <strong id="finalCorrect">0</strong></p>
+                <p>错误数: <strong id="finalWrong">0</strong></p>
                 <p>正确率: <strong id="accuracy">0%</strong></p>
             </div>
 
@@ -550,6 +645,28 @@
                 <div id="accuracyBars">
                     <!-- 动态生成 -->
                 </div>
+            </div>
+
+            <!-- 答题记录 -->
+            <div class="answer-history">
+                <div class="history-title">
+                    <i class="bi bi-list-check"></i> 答题记录
+                </div>
+                <table class="history-table" id="historyTable">
+                    <thead>
+                        <tr>
+                            <th>题号</th>
+                            <th>题目</th>
+                            <th>你的答案</th>
+                            <th>正确答案</th>
+                            <th>结果</th>
+                            <th>用时</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTableBody">
+                        <!-- 动态生成 -->
+                    </tbody>
+                </table>
             </div>
 
             <div class="text-center mt-4">
